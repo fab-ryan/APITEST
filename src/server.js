@@ -6,6 +6,6 @@ const port = config.port;
 const app = express();
 connect;
 app.use(express.json())
-app.use(router)
+app.use('/api/',router)
 
 export { app, port };

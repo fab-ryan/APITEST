@@ -11,6 +11,7 @@ const User = new schema({
   },
   password: {
     type: String,
+    select: false,
   },
   token: {
     type: String,

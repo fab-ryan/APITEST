@@ -1,5 +1,4 @@
 import User from '../models/User.js';
-import Role from '../models/Role.js';
 import UserValidation from '../validation/userValidation.js';
 import bcrypt from 'bcryptjs';
 
@@ -39,4 +38,42 @@ const getAllUser = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-export { Register, getAllUser };
+const deleteUser = async (req, res) => {
+  const id = req.params.userId;
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (!user) return res.status(404).json({ message: 'user not found' });
+    res.status(200).json({ message: 'user deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const updateUser = async (req, res) => {
+  const id = req.params.userId;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        name: req.body.name || user.name,
+        // email:req.body.email || user.email,
+        role: req.body.role || user.role,
+      },
+      { new: true }
+    );
+
+    if (!user) return res.status(404).json({ message: 'user not found' });
+    res.status(200).json({ message: 'user updated successfully', user });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const getSingleUser = async (req, res) => {
+  const id = req.params.userId;
+  try {
+    const user = await User.findById(id);
+    if (!user) res.status(404).json({ message: 'user not found' });
+    res.status(200).json({ user: user });
+  } catch (error) {}
+};
+export { Register, getAllUser, deleteUser, updateUser,getSingleUser };
