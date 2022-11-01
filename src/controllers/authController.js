@@ -1,79 +1,29 @@
 import User from '../models/User.js';
-import UserValidation from '../validation/userValidation.js';
+import AuthValidation from '../validation/authValidation.js';
 import bcrypt from 'bcryptjs';
+import { AssignToken } from '../utils/token.js';
 
-const Register = async (req, res) => {
-  const { error } = UserValidation({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
+const login = async (req, res) => {
+  const { error } = AuthValidation(req.body);
   if (error) return res.status(400).json(error.details[0].message);
   try {
-    const { name, email, password, role } = req.body;
-    const user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: 'User already exists' });
-    const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(password, salt);
-    const newUser = new User({
-      name,
-      email,
-      password: hashPassword,
-      role: role,
-    });
-    const savedUser = await newUser.save();
-    savedUser.password = undefined;
-    res
-      .status(201)
-      .json({ message: 'user saved successfull', user: savedUser });
-  } catch (error) {
-    res.status(400).json(error);
-  }
-};
-const getAllUser = async (req, res) => {
-  try {
-    const user = await User.find().populate('role').exec();
-    res.status(200).json({ user });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-const deleteUser = async (req, res) => {
-  const id = req.params.userId;
-  try {
-    const user = await User.findByIdAndDelete(id);
-    if (!user) return res.status(404).json({ message: 'user not found' });
-    res.status(200).json({ message: 'user deleted successfully' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-const updateUser = async (req, res) => {
-  const id = req.params.userId;
-
-  try {
-    const user = await User.findByIdAndUpdate(
-      id,
-      {
-        name: req.body.name || user.name,
-        // email:req.body.email || user.email,
-        role: req.body.role || user.role,
-      },
-      { new: true }
+    const user = await User.findOne({ email: req.body.email });
+    if (!user)
+      return res.status(400).json({ message: 'email or password is wrong' });
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
     );
 
-    if (!user) return res.status(404).json({ message: 'user not found' });
-    res.status(200).json({ message: 'user updated successfully', user });
+    if (validPassword) {
+      const token = AssignToken({ id: user._id });
+      res.json({ token: token });
+    } else {
+      return res.status(400).json({ message: 'email or password is wrong' });
+    }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json('bad request');
   }
 };
-const getSingleUser = async (req, res) => {
-  const id = req.params.userId;
-  try {
-    const user = await User.findById(id);
-    if (!user) res.status(404).json({ message: 'user not found' });
-    res.status(200).json({ user: user });
-  } catch (error) {}
-};
-export { Register, getAllUser, deleteUser, updateUser,getSingleUser };
+
+export { login };
