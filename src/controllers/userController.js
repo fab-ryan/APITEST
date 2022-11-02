@@ -76,4 +76,4 @@ const getSingleUser = async (req, res) => {
     res.status(200).json({ user: user });
   } catch (error) {}
 };
-export { Register, getAllUser, deleteUser, updateUser,getSingleUser };
+export { Register, getAllUser, deleteUser, updateUser, getSingleUser };

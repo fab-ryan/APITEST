@@ -1,0 +1,104 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Version Testing",
+    "description": "Version ",
+    "version": "1.0.0",
+    "contact": {
+      "name": "NDACYAYISENGA Fabrice",
+      "email": "royalfabrice1234@gmail.com"
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "host": "localhost:5000",
+  "basePath": "/api",
+  "paths": {
+    "/user/": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get all users",
+        "description": "Get all users",
+        "operationId": "getUsers",
+        "produces": ["application/json"],
+        "security":[
+            {
+                "Bearer": []
+            }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/user/single": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get single user",
+        "description": "Get single user",
+        "operationId": "getSingleUser",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "description": "Login",
+        "operationId": "login",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Login",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    }
+  }
+}
