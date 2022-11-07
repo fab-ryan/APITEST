@@ -1,20 +1,26 @@
 import User from '../models/User.js';
 import UserValidation from '../validation/userValidation.js';
 import bcrypt from 'bcryptjs';
+import { Message } from '../utils/Message.js';
+import { sendEmail } from '../helper/send.js';
+import { Password } from '../helper/generatePassword.js';
 
 const Register = async (req, res) => {
   const { error } = UserValidation({
     name: req.body.name,
     email: req.body.email,
-    password: req.body.password,
   });
   if (error) return res.status(400).json(error.details[0].message);
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, role } = req.body;
     const user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: 'User already exists' });
+    
     const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(password, salt);
+    const hashPassword = await bcrypt.hash(Password, salt);
+    console.log(Password);
+    await sendEmail(email, Message(Password, email, name));
+
     const newUser = new User({
       name,
       email,

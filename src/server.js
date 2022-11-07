@@ -17,6 +17,6 @@ app.use('/api', router);
 app.use(
   '/api-docs',
   swagger.serve,
-  swagger.setup(Documentation, { extended: true })
+  swagger.setup(Documentation)
 );
 export { app, port };
